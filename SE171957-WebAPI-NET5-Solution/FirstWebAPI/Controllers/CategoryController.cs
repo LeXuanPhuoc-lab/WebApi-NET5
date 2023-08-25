@@ -2,6 +2,7 @@
 using FirstWebAPI.Heplers;
 using FirstWebAPI.Models;
 using FirstWebAPI.Payload.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -24,11 +25,18 @@ namespace FirstWebAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var categories = _context.Categories.ToList();
+            try
+            {
+                var categories = _context.Categories.ToList();
 
-            return Ok(
-                new BaseResponse { StatusCode = 200, Data = categories}
-                );
+                return Ok(
+                    new BaseResponse { StatusCode = StatusCodes.Status200OK, Data = categories }
+                    );
+            }
+            catch
+            {
+                return NotFound(); 
+            }
         }
 
         [HttpGet("{Id}")]
@@ -40,15 +48,16 @@ namespace FirstWebAPI.Controllers
             if(categories == null)
             {
                 return NotFound(
-                    new BaseResponse { StatusCode = 404, Message = "Not Found Category with Id " + Id}
+                    new BaseResponse { StatusCode = StatusCodes.Status404NotFound, Message = "Not Found Category with Id " + Id}
                     );
             }
             return Ok(
-                new BaseResponse { StatusCode = 200, Data = categories}
+                new BaseResponse { StatusCode = StatusCodes.Status200OK, Data = categories}
                 );
         }
 
         [HttpPost]
+        //[Authorize]
         public IActionResult Create(Category category)
         {
             try
@@ -59,9 +68,10 @@ namespace FirstWebAPI.Controllers
                 };
                 _context.Add(newCategory);
                 _context.SaveChanges();
-                return Ok(
-                    new BaseResponse { StatusCode = 201, Message = "Create Sucess"}
-                    );
+                //return Ok(
+                //    new BaseResponse { StatusCode = StatusCodes.Status201Created, Message = "Create Sucess"}
+                //    );
+                return StatusCode(StatusCodes.Status201Created);
             }
             catch
             {
@@ -85,7 +95,7 @@ namespace FirstWebAPI.Controllers
                 oldCategory.Name = category.Name;
                 _context.SaveChanges();
                 return Ok(
-                    new BaseResponse { StatusCode = 200, Message = "Update Sucess"}
+                    new BaseResponse { StatusCode = StatusCodes.Status200OK, Message = "Update Sucess"}
                     );
             }
             catch

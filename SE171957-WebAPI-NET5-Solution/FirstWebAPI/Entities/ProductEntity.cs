@@ -24,8 +24,16 @@ namespace FirstWebAPI.Entities
         
         public Byte Voucher { get; set; }
 
-        public int? CategoryId { get; set; }
+        //public int? CategoryId { get; set; }
+
         [ForeignKey("CategoryId")]
         public CategoryEntity category;
+
+        public ICollection<OrderDetailEntity> orderDetails;
+
+        public ProductEntity()
+        {
+            orderDetails = new HashSet<OrderDetailEntity>();
+        }
     }
 }
