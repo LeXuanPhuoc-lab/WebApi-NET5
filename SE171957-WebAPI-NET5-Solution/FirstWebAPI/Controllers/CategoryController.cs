@@ -2,7 +2,11 @@
 using FirstWebAPI.Heplers;
 using FirstWebAPI.Models;
 using FirstWebAPI.Payload.Response;
+
 using FirstWebAPI.Services;
+
+using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -26,11 +30,21 @@ namespace FirstWebAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var categories = _categoryRepository.GetCategories();
 
-            return Ok(
-                new BaseResponse { StatusCode = 200, Data = categories}
-                );
+            var categories = _categoryRepository.GetCategories();
+            try
+            {
+
+
+
+                return Ok(
+                    new BaseResponse { StatusCode = StatusCodes.Status200OK, Data = categories }
+                    );
+            }
+            catch
+            {
+                return NotFound(); 
+            }
         }
 
         [HttpGet("{Id}")]
@@ -40,15 +54,16 @@ namespace FirstWebAPI.Controllers
             if(categories == null)
             {
                 return NotFound(
-                    new BaseResponse { StatusCode = 404, Message = "Not Found Category with Id " + Id}
+                    new BaseResponse { StatusCode = StatusCodes.Status404NotFound, Message = "Not Found Category with Id " + Id}
                     );
             }
             return Ok(
-                new BaseResponse { StatusCode = 200, Data = categories}
+                new BaseResponse { StatusCode = StatusCodes.Status200OK, Data = categories}
                 );
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Create(CategoryModel category)
         {
             try
@@ -77,7 +92,7 @@ namespace FirstWebAPI.Controllers
                 }
 
                 return Ok(
-                    new BaseResponse { StatusCode = 200, Message = "Update Sucess" }
+                  new BaseResponse { StatusCode = StatusCodes.Status200OK, Message = "Update Sucess"}
                     );
             }
             catch
