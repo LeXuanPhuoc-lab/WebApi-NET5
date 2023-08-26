@@ -2,6 +2,7 @@
 using FirstWebAPI.Heplers;
 using FirstWebAPI.Models;
 using FirstWebAPI.Payload.Response;
+using FirstWebAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,16 +16,17 @@ namespace FirstWebAPI.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly DbContextHelper _context;
-        public CategoryController(DbContextHelper context)
+        private readonly ICategoryRepository _categoryRepository;
+
+        public CategoryController(ICategoryRepository categoryRepository)
         {
-            _context = context;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var categories = _context.Categories.ToList();
+            var categories = _categoryRepository.GetCategories();
 
             return Ok(
                 new BaseResponse { StatusCode = 200, Data = categories}
@@ -34,9 +36,7 @@ namespace FirstWebAPI.Controllers
         [HttpGet("{Id}")]
         public IActionResult GetById(int Id)
         {
-            var categories = _context.Categories.SingleOrDefault(
-                c => c.CategoryId == Id
-                );
+            var categories = _categoryRepository.GetById(Id);
             if(categories == null)
             {
                 return NotFound(
@@ -49,16 +49,11 @@ namespace FirstWebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Category category)
+        public IActionResult Create(CategoryModel category)
         {
             try
             {
-                CategoryEntity newCategory = new CategoryEntity()
-                {
-                    Name = category.Name
-                };
-                _context.Add(newCategory);
-                _context.SaveChanges();
+                _categoryRepository.Add(category);
                 return Ok(
                     new BaseResponse { StatusCode = 201, Message = "Create Sucess"}
                     );
@@ -70,22 +65,19 @@ namespace FirstWebAPI.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(int CategoryId, Category category)
+        public IActionResult Update(int CategoryId, CategoryModel category)
         {
             try
             {
-                var oldCategory 
-                    = _context.Categories.Where(x => x.CategoryId == CategoryId ).FirstOrDefault();
+                bool isSucess = _categoryRepository.Update(category);
 
-                if(oldCategory == null)
+                if (!isSucess)
                 {
                     return NotFound();
                 }
 
-                oldCategory.Name = category.Name;
-                _context.SaveChanges();
                 return Ok(
-                    new BaseResponse { StatusCode = 200, Message = "Update Sucess"}
+                    new BaseResponse { StatusCode = 200, Message = "Update Sucess" }
                     );
             }
             catch

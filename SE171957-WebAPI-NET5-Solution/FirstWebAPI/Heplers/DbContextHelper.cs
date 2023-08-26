@@ -17,6 +17,7 @@ namespace FirstWebAPI.Heplers
         public DbSet<CategoryEntity> Categories { get; set; }
         public DbSet<OrderEntity> Orders { get; set; }
         public DbSet<OrderDetailEntity> OrderDetails { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
         #endregion
 
         // Fluent API 
@@ -42,6 +43,28 @@ namespace FirstWebAPI.Heplers
                  .WithMany(p => p.orderDetails)
                  .HasForeignKey(e => e.ProductId)
                  .HasConstraintName("FK_OrderDetails_ProductId");
+            });
+
+            modelBuilder.Entity<UserEntity>(e => {
+                e.ToTable("User");
+                e.HasKey(u => u.UserId);
+                e.HasIndex(u => u.UserName).IsUnique();
+
+                e.Property(u => u.UserName)
+                 .IsRequired()
+                 .HasMaxLength(50);
+
+                e.Property(u => u.Password)
+                .IsRequired()
+                .HasMaxLength(250);
+
+                e.Property(u => u.FullName)
+                 .IsRequired()
+                 .HasMaxLength(150);
+
+                e.Property(u => u.Email)
+                 .IsRequired()
+                 .HasMaxLength(150);
             });
         }
     }

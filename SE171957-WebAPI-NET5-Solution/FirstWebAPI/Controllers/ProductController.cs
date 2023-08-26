@@ -13,7 +13,7 @@ namespace FirstWebAPI.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        public static List<Product> products = new List<Product>();
+        public static List<ProductModel> products = new List<ProductModel>();
 
         [HttpGet]
         public IActionResult GetAll()
@@ -48,7 +48,7 @@ namespace FirstWebAPI.Controllers
         [HttpPost]
         public IActionResult Create(ProductDetail productDetail)
         {
-            var product = new Product
+            var product = new ProductModel
             {
                 Id = Guid.NewGuid(),
                 Name = productDetail.Name,
@@ -62,7 +62,7 @@ namespace FirstWebAPI.Controllers
         }
 
         [HttpPut("Id")]
-        public IActionResult Update(String Id, Product product)
+        public IActionResult Update(String Id, ProductModel product)
         {
             try
             {

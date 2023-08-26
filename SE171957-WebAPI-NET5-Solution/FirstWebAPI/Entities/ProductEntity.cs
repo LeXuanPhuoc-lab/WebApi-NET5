@@ -24,7 +24,7 @@ namespace FirstWebAPI.Entities
         
         public Byte Voucher { get; set; }
 
-        //public int? CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
         public CategoryEntity category;

@@ -10,6 +10,9 @@ namespace FirstWebAPI.Models
         public string Name { get; set; }
         public double Price { get; set; }
 
+        public string Description { get; set; }
+        public Byte Voucher { get; set; }
+
         public ProductDetail() { }
         public ProductDetail(string Name, double Price)
         {
@@ -18,12 +21,12 @@ namespace FirstWebAPI.Models
         }
     }
 
-    public class Product : ProductDetail
+    public class ProductModel : ProductDetail
     {
         public Guid Id { get; set; }
 
-        public Product() { }
-        public Product(int Id, string Name, double Price):base(Name, Price)
+        public ProductModel() { }
+        public ProductModel(int Id, string Name, double Price):base(Name, Price)
         {
             Id = Id;
         }
