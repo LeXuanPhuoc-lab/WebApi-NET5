@@ -4,14 +4,16 @@ using FirstWebAPI.Heplers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FirstWebAPI.Migrations
 {
     [DbContext(typeof(DbContextHelper))]
-    partial class DbContextHelperModelSnapshot : ModelSnapshot
+    [Migration("20230826024927_AddTblUser")]
+    partial class AddTblUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,10 +133,9 @@ namespace FirstWebAPI.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
+                    b.Property<int>("FullName")
                         .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Password")
                         .IsRequired()
