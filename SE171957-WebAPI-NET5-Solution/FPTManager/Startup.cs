@@ -1,6 +1,13 @@
+using AutoMapper;
+using FluentValidation;
 using FPTManager.Entities;
+using FPTManager.Mapping;
+using FPTManager.Middlewares;
 using FPTManager.Models;
+using FPTManager.Repositories;
 using FPTManager.Services;
+using FPTManager.Utils;
+using FPTManager.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -49,7 +56,8 @@ namespace FPTManager
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(opt => {
+                    .AddJwtBearer(opt =>
+                    {
                         opt.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = false,
@@ -63,39 +71,50 @@ namespace FPTManager
                         };
                     });
 
+            // Add AutoMapper 
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ApplicationMapper());
+            });
 
-            // Add Repository
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+            services.AddMvc();
+
+            // Add Services
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<ISubjectService, SubjectService>();
+            services.AddScoped<IInstructorService, InstructorService>();
+            services.AddScoped<IStudentCourseService, StudentCourseService>();
+            services.AddScoped<ICourseScheduleService, CourseScheduleService>();
+            services.AddScoped<IRollCallBookService, RollCallBookService>();
+            services.AddScoped<IRoomService, RoomService>();
 
+            // Add Respositories
+            services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
 
+            // Enable CORS
+            services.AddCors(p => p.AddPolicy("MyCors", policy => {
+                // alow particular domain can access 
+                //policy.WithOrigins("https://phuoclx.info", "http://localhost:8080")
 
-            //// Add Authentication
-            //var secretKey = Configuration["AppSettings:SecretKey"];
-            //var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
+                // alow all with any header, method
+                policy.WithOrigins("*")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            }));
 
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //        .AddJwtBearer(opt => {
-            //            opt.TokenValidationParameters = new TokenValidationParameters()
-            //            {
-            //                ValidateIssuer = false,
-            //                ValidateAudience = false,
+            // Use Application Middlware Exception
+            //services.AddTransient<ExceptionMiddleware>();
+            //services.AddTransient<ValidationExceptionMiddleware>();
 
-            //                // Sign in Token
-            //                ValidateIssuerSigningKey = true,
-            //                IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
-
-            //                ClockSkew = TimeSpan.Zero
-            //            };
-            //        });
-
-            //// Add DbContext
-            //services.AddDbContext<PRN211DemoADOContext>(options => 
-            //    options.UseSqlServer(Configuration.GetConnectionString("DataSource"))
-            //);
-
-            //// Add App Settings
-            //services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            // Add Validation
+            services.AddScoped<IValidator<StudentModel>, StudentValidator>();
+            services.AddScoped<IValidator<AccountModel>, AccountValidator>();
 
             services.AddSwaggerGen(c =>
             {
@@ -117,9 +136,16 @@ namespace FPTManager
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseCors("MyCors");
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
+
+            // call Middleware exception
+            //app.ConfigureExceptionMiddleware();
+            // call Validation exception
+            //app.UseMiddleware<ValidationExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

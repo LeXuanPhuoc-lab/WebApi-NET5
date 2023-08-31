@@ -1,5 +1,8 @@
-﻿using FPTManager.Entities;
+﻿using FPTManager.Models;
+using FPTManager.Models.Response;
+using LanguageExt.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +11,9 @@ namespace FPTManager.Services
 {
     public interface IStudentService
     {
-        public bool AddStudent(Student student);
-        public Student GetById(int id);
+        Task<Result<bool>> CreateAsync(StudentModel student);
+
+        Task<List<StudentModel>> GetAllAsync();
+        public StudentResponse GetById(int id);
     }
 }
