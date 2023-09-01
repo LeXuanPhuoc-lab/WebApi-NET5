@@ -22,7 +22,7 @@ namespace FPTManager.Utils
             _appSettings = appSettings;
         }
 
-        public string GenerateToken(Account account) 
+        public string GenerateToken(AccountModel account) 
         {
             //1. secret key bytes
             var secretKeyBytes = Encoding.UTF8.GetBytes(_appSettings.SecretKey);
@@ -35,7 +35,7 @@ namespace FPTManager.Utils
                     new Claim("UserName", account.Username),
                     new Claim("TokenId", Guid.NewGuid().ToString())
                     }),
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                Expires = DateTime.UtcNow.AddMinutes(10),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(secretKeyBytes),
                     SecurityAlgorithms.HmacSha256)

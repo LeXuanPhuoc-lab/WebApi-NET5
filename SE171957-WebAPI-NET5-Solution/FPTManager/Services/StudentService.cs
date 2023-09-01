@@ -1,5 +1,11 @@
-﻿using FPTManager.Entities;
-using System;
+﻿using AutoMapper;
+using FluentValidation;
+using FPTManager.Models;
+using FPTManager.Models.Response;
+using FPTManager.Repositories;
+using FPTManager.Validation;
+using LanguageExt.Common;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,24 +14,47 @@ namespace FPTManager.Services
 {
     public class StudentService : IStudentService
     {
-        private readonly PRN211DemoADOContext _context;
+        //private readonly PRN211DemoADOContext _context;
+        private readonly IMapper _mapper;
+        private readonly IValidator<StudentModel> _validator;
+        private readonly IStudentRepository _studentRepository;
 
-        public StudentService(PRN211DemoADOContext context)
+        public StudentService(IStudentRepository studentRepository,
+            IMapper mapper, IValidator<StudentModel> validator)
         {
-            _context = context;
+            _mapper = mapper;
+            _validator = validator;
+            _studentRepository = studentRepository;
         }
 
-        public bool AddStudent(Student student)
+        public async Task<Result<bool>> CreateAsync(StudentModel student)
         {
-            _context.Add(student);
-            return (_context.SaveChanges() > 0) ? true : false;
+            var validationResult = await _validator.ValidateAsync(student);
+            if (!validationResult.IsValid)
+            {
+                var validationException = new ValidationException(validationResult.Errors);
+                return new Result<bool>(validationException);
+            }
+            var studentEntity = student.ToStudentEntity(_mapper);
+            return await _studentRepository.CreateAsync(studentEntity);
         }
 
-        public Student GetById(int id)
+        public StudentResponse GetById(int id)
         {
-            return _context.Students // from students
-                           .Where(x => x.StudentId == id)//where id
-                           .FirstOrDefault();// select first student
+            //var student = _context.Students // from students
+            //               .Where(x => x.StudentId == id)//where id
+            //               .FirstOrDefault();// select first student
+
+            //return _mapper.Map<StudentResponse>(student);
+            return null;
         }
+
+        public async Task<List<StudentModel>> GetAllAsync()
+        {
+            var students = await _studentRepository.GetAllSync();
+
+            return _mapper.Map<List<StudentModel>>(students);
+        }
+
     }
 }

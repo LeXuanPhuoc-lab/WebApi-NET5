@@ -1,4 +1,6 @@
 ﻿using FPTManager.Entities;
+using FPTManager.Models;
+using LanguageExt.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +13,7 @@ namespace FPTManager.Services
         public bool Login(string username, string password);
         public bool SignUp(Account account);
         public Account GetByUserName(string username);
+
+        Task<Result<bool>> CreateAsync(AccountModel account);
     }
 }
