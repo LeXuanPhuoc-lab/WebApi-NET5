@@ -109,7 +109,7 @@ namespace FPTManager
             }));
 
             // Use Application Middlware Exception
-            //services.AddTransient<ExceptionMiddleware>();
+            services.AddTransient<ExceptionMiddleware>();
             //services.AddTransient<ValidationExceptionMiddleware>();
 
             // Add Validation
@@ -143,7 +143,7 @@ namespace FPTManager
             app.UseAuthorization();
 
             // call Middleware exception
-            //app.ConfigureExceptionMiddleware();
+            app.ConfigureExceptionMiddleware();
             // call Validation exception
             //app.UseMiddleware<ValidationExceptionMiddleware>();
 

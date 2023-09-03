@@ -27,14 +27,14 @@ namespace FPTManager.Services
             _studentRepository = studentRepository;
         }
 
-        public async Task<Result<bool>> CreateAsync(StudentModel student)
+        public async Task<bool> CreateAsync(StudentModel student)
         {
-            var validationResult = await _validator.ValidateAsync(student);
-            if (!validationResult.IsValid)
-            {
-                var validationException = new ValidationException(validationResult.Errors);
-                return new Result<bool>(validationException);
-            }
+            //var validationResult = await _validator.ValidateAsync(student);
+            //if (!validationResult.IsValid)
+            //{
+            //    var validationException = new ValidationException(validationResult.Errors);
+            //    return new Result<bool>(validationException);
+            //}
             var studentEntity = student.ToStudentEntity(_mapper);
             return await _studentRepository.CreateAsync(studentEntity);
         }
@@ -56,5 +56,11 @@ namespace FPTManager.Services
             return _mapper.Map<List<StudentModel>>(students);
         }
 
+
+        public async Task<StudentModel> GetByIdAsync(int id)
+        {
+            var studentEntity = _studentRepository.GetByIdAsync(id);
+            return _mapper.Map<StudentModel>(studentEntity);
+        }
     }
 }

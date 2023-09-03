@@ -9,7 +9,8 @@ namespace FPTManager.Repositories
 {
     public interface IStudentRepository
     {
-        Task<Result<bool>> CreateAsync(Student student);
+        Task<bool> CreateAsync(Student student);
+        Task<Student> GetByIdAsync(int id);
         Task<List<Student>> GetAllSync();
     }
 }
