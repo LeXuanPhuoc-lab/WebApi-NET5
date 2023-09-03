@@ -41,7 +41,8 @@ namespace FPTManager.Payloads.Request
             {
                 Username = signUpRequest.UserName,
                 Password = signUpRequest.Password,
-                StudentId = studentModel.StudentId
+                StudentId = studentModel.StudentId,
+                Email = signUpRequest.Email
             };
         }
     }

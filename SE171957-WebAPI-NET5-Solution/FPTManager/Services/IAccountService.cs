@@ -10,10 +10,9 @@ namespace FPTManager.Services
 {
     public interface IAccountService
     {
-        public bool Login(string username, string password);
-        public bool SignUp(Account account);
-        public Account GetByUserName(string username);
-
-        Task<Result<bool>> CreateAsync(AccountModel account);
+        Task<bool> CreateAsync(AccountModel account);
+        Task<bool> Login(string username, string password);
+        Task<AccountModel> GetByUserNameAsync(string username);
+        Task<AccountModel> GetByEmailAsync(string email);
     }
 }

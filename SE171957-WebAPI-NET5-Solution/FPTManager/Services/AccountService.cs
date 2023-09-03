@@ -4,8 +4,6 @@ using FPTManager.Entities;
 using FPTManager.Models;
 using FPTManager.Repositories;
 using LanguageExt.Common;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,51 +11,45 @@ namespace FPTManager.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly PRN211DemoADOContext _context;
+        //private readonly PRN211DemoADOContext _context;
         private readonly IAccountRepository _accountRepository;
         private readonly IMapper _mapper;
-        private readonly IValidator<AccountModel> _validator;
 
         public AccountService(PRN211DemoADOContext context, IValidator<AccountModel> validator,
             IAccountRepository accountRepository, IMapper mapper)
         {
-            _context = context;
+            //_context = context;
             _accountRepository = accountRepository;
             _mapper = mapper;
-            _validator = validator;
+            //_validator = validator;
         }
 
-        public async Task<Result<bool>> CreateAsync(AccountModel account)
+        public async Task<bool> CreateAsync(AccountModel account)
         {
-            var validationResult = await _validator.ValidateAsync(account);
-            if (!validationResult.IsValid)
-            {
-                var validationException = new ValidationException(validationResult.Errors);
-                return new Result<bool>(validationException);
-            }
+            //var validationResult = await _validator.ValidateAsync(account);
+            //if (!validationResult.IsValid)
+            //{
+            //var validationException = new ValidationException(validationResult.Errors);
+            //return new Result<bool>(validationException);
+            //}
 
             var accountEntity = _mapper.Map<Account>(account);
             return await _accountRepository.CreateAsync(accountEntity);
         }
 
-        public Account GetByUserName(string username)
+        public async Task<AccountModel> GetByEmailAsync(string email)
         {
-            return _context.Accounts // from
-                           .Where(x => x.Username == username)//where
-                           .FirstOrDefault();//select
+            return await _accountRepository.GetByEmailAsync(email);
         }
 
-        public bool Login(string username, string password)
+        public async Task<AccountModel> GetByUserNameAsync(string username)
         {
-            return _context.Accounts // find in all accounts
-                           .Where(x => x.Username == username && x.Password == password) // where username, password
-                           .FirstOrDefault() != null ? true : false; // exist return true, otherwise false
+            return await _accountRepository.GetByUsernameAsync(username);
         }
 
-        public bool SignUp(Account account)
+        public async Task<bool> Login(string username, string password)
         {
-            _context.Accounts.Add(account);
-            return (_context.SaveChanges() > 0) ? true : false;
+            return await _accountRepository.Login(username, password);
         }
     }
 }

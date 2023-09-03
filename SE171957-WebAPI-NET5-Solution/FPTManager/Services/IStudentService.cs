@@ -11,9 +11,9 @@ namespace FPTManager.Services
 {
     public interface IStudentService
     {
-        Task<Result<bool>> CreateAsync(StudentModel student);
-
+        Task<bool> CreateAsync(StudentModel student);
         Task<List<StudentModel>> GetAllAsync();
+        Task<StudentModel> GetByIdAsync(int id);
         public StudentResponse GetById(int id);
     }
 }

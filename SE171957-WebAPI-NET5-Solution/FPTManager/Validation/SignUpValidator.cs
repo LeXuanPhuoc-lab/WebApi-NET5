@@ -33,17 +33,17 @@ namespace FPTManager.Validation
                 .WithMessage("Not Valid Email");
             // FullName validation <- RuleSet
             RuleFor(x => x.FirstName)
-                .NotEmpty()
-                .Matches("^[a-z]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-                .WithMessage("Invalid firstname");
+              .NotEmpty()
+              .Matches("^[a-zA-Z]+$")
+              .WithMessage("First name not contain number or special character");
             RuleFor(x => x.MidName)
                 .NotEmpty()
-                .Matches("^[a-z]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-            .WithMessage("Invalid midname");
+                .Matches("^[a-zA-Z]+$")
+                .WithMessage("Mid name not contain number or special character");
             RuleFor(x => x.LastName)
                 .NotEmpty()
-                .Matches("^[a-z]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase)
-                .WithMessage("Invalid lastname");
+                .Matches("^[a-zA-Z]+$")
+                .WithMessage("Last name not contain number or special character");
             // Username validation
             RuleFor(x => x.UserName)
                 .NotNull()
@@ -58,31 +58,31 @@ namespace FPTManager.Validation
         }
     }
 
-    // Validator Extension
-    public static class SignUpValidatorExtension
-    {
-        public static ValidationProblemDetails ToProblemDetails(this ValidationResult results) 
-        {
-            var error = new ValidationProblemDetails 
-            {
-                Status = 400
-            };
-            foreach(var validationFailure in results.Errors)
-            {
-                if (error.Errors.ContainsKey(validationFailure.PropertyName))
-                {
-                    error.Errors[validationFailure.PropertyName] =
-                        error.Errors[validationFailure.PropertyName]
-                            .Concat(new[] { validationFailure.ErrorMessage }).ToArray();
-                    continue;
-                }
+    //// Validator Extension
+    //public static class SignUpValidatorExtension
+    //{
+    //    public static ValidationProblemDetails ToProblemDetails(this ValidationResult results) 
+    //    {
+    //        var error = new ValidationProblemDetails 
+    //        {
+    //            Status = 400
+    //        };
+    //        foreach(var validationFailure in results.Errors)
+    //        {
+    //            if (error.Errors.ContainsKey(validationFailure.PropertyName))
+    //            {
+    //                error.Errors[validationFailure.PropertyName] =
+    //                    error.Errors[validationFailure.PropertyName]
+    //                        .Concat(new[] { validationFailure.ErrorMessage }).ToArray();
+    //                continue;
+    //            }
 
-                error.Errors.Add(new KeyValuePair<string, string[]>(
-                    validationFailure.PropertyName,
-                    new[] { validationFailure.ErrorMessage }));
-            }
+    //            error.Errors.Add(new KeyValuePair<string, string[]>(
+    //                validationFailure.PropertyName,
+    //                new[] { validationFailure.ErrorMessage }));
+    //        }
 
-            return error;
-        }
-    }
+    //        return error;
+    //    }
+    //}
 }

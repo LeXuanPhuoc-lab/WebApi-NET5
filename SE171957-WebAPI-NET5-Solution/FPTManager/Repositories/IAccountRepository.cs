@@ -1,14 +1,14 @@
 ﻿using FPTManager.Entities;
-using LanguageExt.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using FPTManager.Models;
 using System.Threading.Tasks;
 
 namespace FPTManager.Repositories
 {
     public interface IAccountRepository
     {
-        Task<Result<bool>> CreateAsync(Account account);
+        Task<bool> CreateAsync(Account account);
+        Task<bool> Login(string username, string password);
+        Task<AccountModel> GetByEmailAsync(string email); 
+        Task<AccountModel> GetByUsernameAsync(string email);
     }
 }

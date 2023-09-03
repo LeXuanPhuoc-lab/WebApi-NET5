@@ -2,12 +2,14 @@
 using FPTManager.Models.Response;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FPTManager.Middlewares
@@ -36,6 +38,7 @@ namespace FPTManager.Middlewares
         private static Task HandleException(HttpContext context, Exception ex)
         {
             int statusCode = StatusCodes.Status500InternalServerError;
+            string message = ex.Message.ToString();
             switch (ex)
             {
                 case NotFoundException _:
@@ -44,16 +47,24 @@ namespace FPTManager.Middlewares
                 case BadRequestException _:
                     statusCode = StatusCodes.Status400BadRequest;
                     break;
+                case DbUpdateException _:
+                    statusCode = StatusCodes.Status500InternalServerError;
+
+                    if (message.ToUpper().Contains("DUPLICATE"))
+                    {
+                        message = "Username already exist";
+                    }
+                    break;
             }
             var errorReponse = new ErrorResponse
             {
                 StatusCode = statusCode,
-                Errors = ex.Message
-            }.ToString();
+                Message = message
+            };
             // set content type 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
-            return context.Response.WriteAsync(errorReponse);
+            return context.Response.WriteAsync(JsonSerializer.Serialize(errorReponse));
         }
     }
 
